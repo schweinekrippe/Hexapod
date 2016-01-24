@@ -38,59 +38,36 @@ class Robot():
 	# v: 2nd coordinate
 	# w: 3rd coordinate == 0 as all points ly in a plane
 	def initFloorPlate(self, link1 = [0,0], link2 = [0,0], link3 = [0,0], link4 = [0,0], link5 = [0,0], link6 = [0,0]):
-		self.u1 = link1[0]
-		self.v1 = link1[1]
 		
-		self.u2 = link2[0]
-		self.v2 = link2[1]
+		self.leg1FloorLink = Matrix([link1[0], link1[1], 0])
+		self.leg2FloorLink = Matrix([link2[0], link2[1], 0])
+		self.leg3FloorLink = Matrix([link3[0], link3[1], 0])
+		self.leg4FloorLink = Matrix([link4[0], link4[1], 0])
+		self.leg5FloorLink = Matrix([link5[0], link5[1], 0])
+		self.leg6FloorLink = Matrix([link6[0], link6[1], 0])
 		
-		self.u3 = link3[0]
-		self.v3 = link3[1]
-		
-		self.u4 = link4[0]
-		self.v4 = link4[1]
-		
-		self.u5 = link5[0]
-		self.v5 = link5[1]
-		
-		self.u6 = link6[0]
-		self.v6 = link6[1]
+		self.legFloorLinks = [self.leg1FloorLink, self.leg2FloorLink, self.leg3FloorLink, self.leg4FloorLink, self.leg5FloorLink, self.leg6FloorLink]
 		
 	# x: 1st coordinate of the top plate
 	# y: 2nd coordinate
 	# z: 3rd coordinate == 0 as all points ly in a plane
 	def initTopPlate(self, link1 = [0,0], link2 = [0,0], link3 = [0,0], link4 = [0,0], link5 = [0,0], link6 = [0,0]):
-		self.x1 = link1[0]
-		self.y1 = link1[1]
-		self.z1 = 0
 		
-		self.x2 = link2[0]
-		self.y2 = link2[1]
-		self.z2 = 0
+		self.leg1TopPlateLink = Matrix([link1[0], link1[1], 0])
+		self.leg2TopPlateLink = Matrix([link2[0], link2[1], 0])
+		self.leg3TopPlateLink = Matrix([link3[0], link3[1], 0])
+		self.leg4TopPlateLink = Matrix([link4[0], link4[1], 0])
+		self.leg5TopPlateLink = Matrix([link5[0], link5[1], 0])
+		self.leg6TopPlateLink = Matrix([link6[0], link6[1], 0])
 		
-		self.x3 = link3[0]
-		self.y3 = link3[1]
-		self.z3 = 0
-		
-		self.x4 = link4[0]
-		self.y4 = link4[1]
-		self.z4 = 0
-		
-		self.x5 = link5[0]
-		self.y5 = link5[1]
-		self.z5 = 0
-		
-		self.x6 = link6[0]
-		self.y6 = link6[1]
-		self.z6 = 0
-		
+		self.legTopPlateLinks = [self.leg1TopPlateLink, self.leg2TopPlateLink, self.leg3TopPlateLink, self.leg4TopPlateLink, self.leg5TopPlateLink, self.leg6TopPlateLink]
 		
 		
 	def getFloorPlate(self):
-		return [[self.u1, self.v1, 0], [self.u2, self.v2, 0], [self.u3, self.v3, 0], [self.u4, self.v4, 0], [self.u5, self.v5, 0], [self.u6, self.v6, 0]]
+		return self.legFloorLinks
 
 	def getTopPlate(self):
-		return [[self.x1, self.y1, self.z1], [self.x2, self.y2, self.z2], [self.x3, self.y3, self.z3], [self.x4, self.y4, self.z4], [self.x5, self.y5, self.z5], [self.x6, self.y6, self.z6]]
+		return self.legTopPlateLinks
 
 	def getRobot(self):
 		return [self.getFloorPlate(), self.getTopPlate()]
@@ -99,30 +76,16 @@ class Robot():
 	# translation = [x,y,z], rotation = [psi, theta, phi]
 	# angles are given in radians
 	def setMotion(self, translation = [0,0,0], rotation = [0,0,0]):
-		self.x1 += translation[0]
-		self.y1 += translation[1]
-		self.z1 += translation[2]
 		
-		self.x2 += translation[0]
-		self.y2 += translation[1]
-		self.z2 += translation[2]
+		# append the translation
+		self.leg1TopPlateLink += Matrix(translation)
+		self.leg2TopPlateLink += Matrix(translation)
+		self.leg3TopPlateLink += Matrix(translation)
+		self.leg4TopPlateLink += Matrix(translation)
+		self.leg5TopPlateLink += Matrix(translation)
+		self.leg6TopPlateLink += Matrix(translation)
 		
-		self.x3 += translation[0]
-		self.y3 += translation[1]
-		self.z3 += translation[2]
-		
-		self.x4 += translation[0]
-		self.y4 += translation[1]
-		self.z4 += translation[2]
-		
-		self.x5 += translation[0]
-		self.y5 += translation[1]
-		self.z5 += translation[2]
-		
-		self.x6 += translation[0]
-		self.y6 += translation[1]
-		self.z6 += translation[2]
-		
+		# append the rotation
 		psi = rotation[0]
 		phi = rotation[1]
 		theta = rotation[2]
@@ -140,34 +103,62 @@ class Robot():
 		M32 = math.cos(phi)*math.sin(theta)
 		M33 = math.cos(theta)
 	
-		rotMatrix = Matrix(((M11,M12,M13),(M21,M22,M23),(M31,M32,M33)))
-		linkMatrixTransp = Matrix(((self.x1, self.y1, self.z1), (self.x2, self.y2, self.z2), (self.x3, self.y3, self.z3), (self.x4, self.y4, self.z4), (self.x5, self.y5, self.z5), (self.x6, self.y6, self.z6)))
-		linkMatrix = linkMatrixTransp.T
+		rotMatrix = Matrix([[M11,M12,M13],[M21,M22,M23],[M31,M32,M33]])
+		linkMatrix = self.leg6TopPlateLink
+		linkMatrix = linkMatrix.col_insert(0, self.leg5TopPlateLink)
+
+		linkMatrix = linkMatrix.col_insert(0, self.leg4TopPlateLink)
+ 
+		linkMatrix = linkMatrix.col_insert(0, self.leg3TopPlateLink)
+
+		linkMatrix = linkMatrix.col_insert(0, self.leg2TopPlateLink)
+
+		linkMatrix = linkMatrix.col_insert(0, self.leg1TopPlateLink)
+				
 		linkMatrix = rotMatrix*linkMatrix
 		
-		self.x1, self.y1, self.z1 = linkMatrix.col(0)
-		self.x2, self.y2, self.z2 = linkMatrix.col(1)
-		self.x3, self.y3, self.z3 = linkMatrix.col(2)
-		self.x4, self.y4, self.z4 = linkMatrix.col(3)
-		self.x5, self.y5, self.z5 = linkMatrix.col(4)
-		self.x6, self.y6, self.z6 = linkMatrix.col(5)
+		self.leg1TopPlateLink = linkMatrix.col(0)
+		self.leg2TopPlateLink = linkMatrix.col(1)
+		self.leg3TopPlateLink = linkMatrix.col(2)
+		self.leg4TopPlateLink = linkMatrix.col(3)
+		self.leg5TopPlateLink = linkMatrix.col(4)
+		self.leg6TopPlateLink = linkMatrix.col(5)
 
-	# test: all distances of links must stay the same. e.g. sqrt(||L1-L2||) must be constant. Ir is independable of translations.
+	# test: all distances of links must stay the same. e.g. sqrt(||L1-L2||) must be constant. It is independable of translations.
 	# seems to work except of small rounding errors.
+	# returns a Vecor with all the distances [link1-link1, link1-link2 ... link6-link6]
 	def getDistances(self):
-		d1 = math.sqrt((self.x1-self.x2)**2 + (self.y1-self.y2)**2 + (self.z1-self.z2)**2)
-		d2 = math.sqrt((self.x3-self.x2)**2 + (self.y3-self.y2)**2 + (self.z3-self.z2)**2)
-		d3 = math.sqrt((self.x4-self.x2)**2 + (self.y4-self.y2)**2 + (self.z4-self.z2)**2)
-		return [d1,d2,d3]
+		
+		results = []
+		for link1 in self.legTopPlateLinks:
+			for link2 in self.legTopPlateLinks:
+				temp = link1-link2
+				results.append(mpmath.norm(temp,2))
+				
+		
+		return(Matrix(results))
 	
+
+		
 	
 def main(args):
 	sqrt3halve = math.sqrt(3)/2.0
 	# default robot
 	R = Robot([1,0],[-0.5,sqrt3halve],[-0.5, sqrt3halve],[-0.5,-sqrt3halve],[-0.5,-sqrt3halve],[1,0], [0.5,sqrt3halve],[0.5,sqrt3halve],[-1,0],[-1,0],[-0.5,sqrt3halve],[-0.5,sqrt3halve])
-	R.setMotion([1,1,1], [1,2,3])
-	R.setMotion([0,0,0], [2,4,6])
-	#print(R.getRobot())
+	
+	# measure the distance between the links and apply translations and rotations.
+	# measure again.
+	# the distances must be the same, if everything is properly implemented.
+	d1 = R.getDistances()
+	R.setMotion([1,0,0], [2,5,2])
+	d2 = R.getDistances()
+	R.setMotion([3,-1,4], [3,0,3])
+	d3 = R.getDistances()
+	
+	# as expected all of the following entries are 0
+	print(d1-d2)
+	print(d2-d3)
+
 	return 0
 
 if __name__ == '__main__':
